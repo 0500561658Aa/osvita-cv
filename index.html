@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -37,6 +36,17 @@
     <style>
         /* Custom scrollbar for clean UI */
         ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+
         /* Print styles for Official Letter & Project Passport */
         @media print {
             body * {
@@ -112,7 +122,10 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Індивідуальний код закладу *</label>
                         <div class="relative">
                             <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                            <input type="text" id="input-inst-code" required placeholder="Напр.: VPU-190" class="w-full pl-10 pr-4 py-2.5 text-sm font-mono uppercase font-bold tracking-wider border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gov-600/20 focus:border-gov-600">
+                            <input type="password" id="input-inst-code" required placeholder="Введіть код закладу" class="w-full pl-10 pr-10 py-2.5 text-sm font-mono uppercase font-bold tracking-wider border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gov-600/20 focus:border-gov-600">
+                            <button type="button" onclick="togglePasswordVisibility('input-inst-code', 'eye-inst-code')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1" title="Показати / приховати код">
+                                <i id="eye-inst-code" class="fa-solid fa-eye text-sm"></i>
+                            </button>
                         </div>
                         <p class="text-[11px] text-slate-500 mt-1.5">
                             Код видається Управлінням освіти. Ви бачитимете та зможете редагувати <strong>виключно дані свого закладу</strong>.
@@ -130,10 +143,13 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1.5">Код адміністратора Управління освіти *</label>
                         <div class="relative">
                             <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                            <input type="password" id="input-admin-code" required placeholder="Введіть пароль адміністратора" class="w-full pl-10 pr-4 py-2.5 text-sm font-mono font-bold border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gov-600/20 focus:border-gov-600">
+                            <input type="password" id="input-admin-code" required placeholder="Введіть пароль адміністратора" class="w-full pl-10 pr-10 py-2.5 text-sm font-mono font-bold border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gov-600/20 focus:border-gov-600">
+                            <button type="button" onclick="togglePasswordVisibility('input-admin-code', 'eye-admin-code')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1" title="Показати / приховати пароль">
+                                <i id="eye-admin-code" class="fa-solid fa-eye text-sm"></i>
+                            </button>
                         </div>
                         <p class="text-[11px] text-slate-500 mt-1.5">
-                            Демо-код за замовчуванням: <code class="bg-slate-100 px-1.5 py-0.5 rounded font-bold text-slate-800">ADMIN-2026</code> (можна змінити в кабінеті).
+                            Доступ лише для уповноважених працівників Управління освіти.
                         </p>
                     </div>
                     <button type="submit" class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
@@ -256,6 +272,10 @@
                     <button onclick="exportContractsRegistryCSV()" class="inline-flex items-center gap-2 bg-cyan-700 hover:bg-cyan-800 text-white text-sm font-medium px-3.5 py-2.5 rounded-xl shadow-sm transition-colors" title="Завантажити повний реєстр договорів, контрагентів та актів по громаді">
                         <i class="fa-solid fa-file-contract"></i>
                         <span class="hidden sm:inline">Договори та акти (CSV)</span>
+                    </button>
+                    <button onclick="exportAllProgramsCSV()" class="inline-flex items-center gap-2 bg-indigo-700 hover:bg-indigo-800 text-white text-sm font-medium px-3.5 py-2.5 rounded-xl shadow-sm transition-colors" title="Зведений Excel-звіт по ВСІХ субвенціях одразу">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span class="hidden sm:inline">Усі субвенції (CSV)</span>
                     </button>
                     <button onclick="switchTab('reports')" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium px-3.5 py-2.5 rounded-xl shadow-sm transition-colors" title="Відкрити папку загальних та індивідуальних звітів по закладах">
                         <i class="fa-solid fa-folder-open"></i>
@@ -742,9 +762,9 @@
                                     <i class="fa-solid fa-shield-halved text-2xl text-slate-800"></i>
                                 </div>
                                 <div class="font-bold text-sm tracking-widest uppercase">УКРАЇНА</div>
-                                <div class="font-bold text-base">Чернівецька міська рада</div>
-                                <div class="font-bold text-base">Управління освіти</div>
-                                <div class="text-xs text-slate-600 mt-1">
+                                <div id="lh-council" class="font-bold text-base">Чернівецька міська рада</div>
+                                <div id="lh-dept" class="font-bold text-base">Управління освіти</div>
+                                <div id="lh-contacts" class="text-xs text-slate-600 mt-1">
                                     вул. Героїв Майдану, 176, м. Чернівці, 58029, тел./факс (0372) 53-30-87<br>
                                     E-mail: osvitacv@gmail.com, сайт: osvita.cv.ua, Код ЄДРПОУ №02147345
                                 </div>
@@ -1057,7 +1077,13 @@
 
             <!-- Dossier Footer Actions -->
             <div class="px-6 py-3.5 bg-white border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 shrink-0">
-                <button type="button" onclick="closeDossierModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Закрити картку</button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeDossierModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition-colors">Закрити картку</button>
+                    <button type="button" id="dossier-btn-delete" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Видалити заклад</span>
+                    </button>
+                </div>
                 <div class="flex flex-wrap items-center gap-2">
                     <button type="button" id="dossier-btn-passport" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
                         <i class="fa-solid fa-print"></i>
@@ -1286,27 +1312,6 @@
         </div>
     </div>
 
-    <!-- ==================== MODAL: ADMIN PASSWORD SETTINGS ==================== -->
-    <div id="admin-settings-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full shadow-xl border border-slate-200 overflow-hidden">
-            <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-900">Код входу Управління освіти</h3>
-                <button type="button" onclick="closeAdminSettingsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form onsubmit="saveAdminCodeSetting(event)" class="p-5 space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Новий код адміністратора *</label>
-                    <input type="text" id="setting-admin-code" required class="w-full text-sm font-mono font-bold border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-none focus:border-gov-600">
-                    <p class="text-[11px] text-slate-500 mt-1">Цей код використовується для входу в головний кабінет Управління освіти.</p>
-                </div>
-                <div class="pt-2 flex justify-end gap-2">
-                    <button type="button" onclick="closeAdminSettingsModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl">Скасувати</button>
-                    <button type="submit" class="px-4 py-2 text-xs font-semibold text-white bg-gov-700 hover:bg-gov-800 rounded-xl">Зберегти код</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- ==================== MODAL: ADD BUDGET YEAR ==================== -->
     <div id="add-year-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-sm w-full shadow-xl border border-slate-200 overflow-hidden">
@@ -1390,16 +1395,22 @@
 
     <!-- ==================== MODAL: ADMIN PASSWORD SETTINGS & BACKUP ==================== -->
     <div id="admin-settings-modal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-xl border border-slate-200 overflow-hidden">
-            <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-900">Налаштування Управління та Резервні копії</h3>
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+            <div class="px-5 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
+                <h3 class="text-sm font-bold text-slate-900">Налаштування Управління, Шапка листа та Імпорт</h3>
                 <button type="button" onclick="closeAdminSettingsModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-5 space-y-5">
+            <div class="p-5 space-y-5 overflow-y-auto flex-1">
+                <!-- 1. Admin Password -->
                 <form onsubmit="saveAdminCodeSetting(event)" class="space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Код входу Управління освіти *</label>
-                        <input type="text" id="setting-admin-code" required class="w-full text-sm font-mono font-bold border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-none focus:border-gov-600">
+                        <div class="relative">
+                            <input type="password" id="setting-admin-code" required class="w-full text-sm font-mono font-bold border border-slate-200 rounded-xl pl-3.5 pr-10 py-2 focus:outline-none focus:border-gov-600">
+                            <button type="button" onclick="togglePasswordVisibility('setting-admin-code', 'eye-setting-admin')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1">
+                                <i id="eye-setting-admin" class="fa-solid fa-eye text-sm"></i>
+                            </button>
+                        </div>
                         <p class="text-[11px] text-slate-500 mt-1">Цей код використовується для входу в головний кабінет Управління освіти.</p>
                     </div>
                     <div class="flex justify-end">
@@ -1407,18 +1418,60 @@
                     </div>
                 </form>
 
+                <!-- 2. Letterhead Settings -->
+                <form onsubmit="saveLetterheadSettings(event)" class="pt-4 border-t border-slate-200 space-y-2.5">
+                    <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-signature text-gov-700"></i>
+                        <span>Реквізити шапки офіційного листа</span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Орган місцевого самоврядування</label>
+                            <input type="text" id="set-lh-council" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-1.5">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Назва управління / відділу</label>
+                            <input type="text" id="set-lh-dept" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-1.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Адреса, телефон, E-mail та ЄДРПОУ</label>
+                        <input type="text" id="set-lh-contacts" class="w-full text-xs border border-slate-200 rounded-xl px-3 py-1.5">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-3.5 py-1.5 text-xs font-semibold text-gov-800 bg-gov-50 hover:bg-gov-100 border border-gov-200 rounded-xl">Оновити реквізити листа</button>
+                    </div>
+                </form>
+
+                <!-- 3. Bulk Import from Excel -->
+                <div class="pt-4 border-t border-slate-200 space-y-2">
+                    <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-import text-indigo-600"></i>
+                        <span>Швидкий імпорт закладів з Excel (вставка списком)</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500">Вставте рядки з Excel у форматі: <code>Назва закладу ; Сума плану ; КПКВК ; КЕКВ</code> (кожен заклад з нового рядка).</p>
+                    <textarea id="bulk-import-textarea" rows="3" placeholder="Чернівецький ліцей №2; 250000; 0611181; 3110&#10;Чернівецька гімназія №7; 180000; 0611181; 2210" class="w-full text-xs border border-slate-200 rounded-xl p-2.5 focus:outline-none focus:border-indigo-600"></textarea>
+                    <div class="flex justify-end">
+                        <button type="button" onclick="bulkImportInstitutions()" class="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl">Імпортувати заклади в реєстр</button>
+                    </div>
+                </div>
+
+                <!-- 4. Backup & Export All -->
                 <div class="pt-4 border-t border-slate-200 space-y-2.5">
                     <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                         <i class="fa-solid fa-database text-emerald-600"></i>
-                        <span>Резервне копіювання всієї бази даних (.json)</span>
+                        <span>Резервне копіювання та зведені вивантаження</span>
                     </div>
-                    <p class="text-[11px] text-slate-500">Завантажте файл резервної копії на комп’ютер або відновіть збережений раніше стан усіх бюджетних років.</p>
                     <div class="flex flex-wrap items-center gap-2 pt-1">
-                        <button type="button" onclick="exportBackupJSON()" class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl">
-                            <i class="fa-solid fa-download"></i>
-                            <span>Завантажити копію (.json)</span>
+                        <button type="button" onclick="exportAllProgramsCSV()" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-indigo-700 hover:bg-indigo-800 rounded-xl">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span>Звіт по ВСІХ програмах (CSV)</span>
                         </button>
-                        <label class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl cursor-pointer">
+                        <button type="button" onclick="exportBackupJSON()" class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Копія бази (.json)</span>
+                        </button>
+                        <label class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl cursor-pointer">
                             <i class="fa-solid fa-upload"></i>
                             <span>Відновити з файлу</span>
                             <input type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden">
@@ -1426,12 +1479,8 @@
                     </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-200 space-y-2.5">
-                    <div class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                        <i class="fa-solid fa-globe text-gov-700"></i>
-                        <span>Публікація як окремий постійний сайт</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500">Завантажте готовий файл <code>index.html</code> на комп’ютер, щоб розмістити його на безкоштовному хостингу (Netlify / GitHub Pages).</p>
+                <!-- 5. Download Standalone Website -->
+                <div class="pt-4 border-t border-slate-200 space-y-2">
                     <button type="button" onclick="downloadStandaloneHTML()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-xl transition-colors">
                         <i class="fa-solid fa-file-code"></i>
                         <span>Завантажити готовий файл сайту (index.html)</span>
@@ -1440,6 +1489,65 @@
             </div>
         </div>
     </div>
+
+    <!-- ==================== MODAL: CONFIRM DELETE INSTITUTION ==================== -->
+    <div id="delete-inst-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full shadow-xl border border-slate-200 overflow-hidden p-5 space-y-4">
+            <div class="flex items-start gap-3 text-rose-600">
+                <div class="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center shrink-0 mt-0.5">
+                    <i class="fa-solid fa-trash-can text-base"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-bold text-slate-900">Видалити заклад з реєстру?</h3>
+                    <p id="delete-inst-name-label" class="text-xs text-slate-600 mt-1 font-medium"></p>
+                    <p class="text-[11px] text-slate-400 mt-1">Усі договори, акти та суми цього закладу в поточній програмі будуть видалені.</p>
+                </div>
+            </div>
+            <input type="hidden" id="delete-inst-id-hidden">
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeDeleteInstModal()" class="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-xl">Скасувати</button>
+                <button type="button" onclick="confirmDeleteInstitution()" class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-xl">Так, видалити</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Immediate synchronous UI helpers for login screen before module load
+        window.switchLoginRole = function(role) {
+            const tabInst = document.getElementById('login-tab-inst');
+            const tabAdmin = document.getElementById('login-tab-admin');
+            const formInst = document.getElementById('form-login-inst');
+            const formAdmin = document.getElementById('form-login-admin');
+            if (!tabInst || !tabAdmin || !formInst || !formAdmin) return;
+
+            if (role === 'institution') {
+                tabInst.className = 'py-2 px-3 rounded-lg text-xs font-bold transition-all bg-white text-gov-800 shadow-xs';
+                tabAdmin.className = 'py-2 px-3 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
+                formInst.classList.remove('hidden');
+                formAdmin.classList.add('hidden');
+            } else {
+                tabAdmin.className = 'py-2 px-3 rounded-lg text-xs font-bold transition-all bg-white text-gov-800 shadow-xs';
+                tabInst.className = 'py-2 px-3 rounded-lg text-xs font-bold transition-all text-slate-600 hover:text-slate-900';
+                formAdmin.classList.remove('hidden');
+                formInst.classList.add('hidden');
+            }
+        };
+
+        window.togglePasswordVisibility = function(inputId, iconId) {
+            const inp = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!inp || !icon) return;
+            if (inp.type === 'password') {
+                inp.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                inp.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1666,6 +1774,11 @@
             adminCode: 'ADMIN-2026',
             currentProgram: 'НУШ',
             currentYear: '2026',
+            letterhead: {
+                council: 'Чернівецька міська рада',
+                dept: 'Управління освіти',
+                contacts: 'вул. Героїв Майдану, 176, м. Чернівці, 58029, тел./факс (0372) 53-30-87 | E-mail: osvitacv@gmail.com, сайт: osvita.cv.ua, Код ЄДРПОУ №02147345'
+            },
             programs: {},
             years: {},
             activityLog: []
@@ -1916,6 +2029,7 @@
                             adminCode: parsed.adminCode || 'ADMIN-2026',
                             currentProgram: parsed.currentProgram || 'НУШ',
                             currentYear: parsed.currentYear || '2026',
+                            letterhead: parsed.letterhead || appState.letterhead,
                             programs: parsed.programs || null,
                             years: parsed.years || {},
                             activityLog: Array.isArray(parsed.activityLog) ? parsed.activityLog : []
@@ -2333,6 +2447,10 @@
         function openAdminSettingsModal() {
             if (!activeSession || activeSession.role !== 'admin') return;
             document.getElementById('setting-admin-code').value = appState.adminCode;
+            const lh = appState.letterhead || {};
+            document.getElementById('set-lh-council').value = lh.council || 'Чернівецька міська рада';
+            document.getElementById('set-lh-dept').value = lh.dept || 'Управління освіти';
+            document.getElementById('set-lh-contacts').value = lh.contacts || 'вул. Героїв Майдану, 176, м. Чернівці, 58029, тел./факс (0372) 53-30-87 | E-mail: osvitacv@gmail.com, сайт: osvita.cv.ua, Код ЄДРПОУ №02147345';
             document.getElementById('admin-settings-modal').classList.remove('hidden');
         }
 
@@ -2351,6 +2469,140 @@
             saveData();
             closeAdminSettingsModal();
             showToast('Код адміністратора оновлено');
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const inp = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!inp || !icon) return;
+            if (inp.type === 'password') {
+                inp.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                inp.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function applyLetterheadToPreview() {
+            const lh = appState.letterhead || {};
+            const cEl = document.getElementById('lh-council');
+            const dEl = document.getElementById('lh-dept');
+            const ctEl = document.getElementById('lh-contacts');
+            if (cEl) cEl.textContent = lh.council || 'Чернівецька міська рада';
+            if (dEl) dEl.textContent = lh.dept || 'Управління освіти';
+            if (ctEl) ctEl.innerHTML = escapeHtml(lh.contacts || 'вул. Героїв Майдану, 176, м. Чернівці, 58029, тел./факс (0372) 53-30-87').replace('|', '<br>');
+        }
+
+        function saveLetterheadSettings(e) {
+            e.preventDefault();
+            appState.letterhead = {
+                council: document.getElementById('set-lh-council').value.trim() || 'Чернівецька міська рада',
+                dept: document.getElementById('set-lh-dept').value.trim() || 'Управління освіти',
+                contacts: document.getElementById('set-lh-contacts').value.trim()
+            };
+            saveData();
+            applyLetterheadToPreview();
+            showToast('Реквізити шапки листа оновлено!');
+        }
+
+        function bulkImportInstitutions() {
+            if (!activeSession || activeSession.role !== 'admin') return;
+            const raw = document.getElementById('bulk-import-textarea').value.trim();
+            if (!raw) {
+                showToast('Вставте список закладів у текстове поле', 'error');
+                return;
+            }
+            const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            let addedCount = 0;
+
+            lines.forEach((line, idx) => {
+                const parts = line.split(/[;\t]/).map(p => p.trim());
+                const name = parts[0];
+                if (!name) return;
+                const total = parseFloat((parts[1] || '0').replace(/\s+/g, '').replace(',', '.')) || 0;
+                const kpkvk = parts[2] || '0611181';
+                const kekv = parts[3] || '3110';
+                const localVal = Math.round(total * 0.2 * 100) / 100;
+                const subVal = Math.round((total - localVal) * 100) / 100;
+
+                institutions.unshift(normalizeInstitution({
+                    id: `inst-imp-${Date.now()}-${idx}`,
+                    accessCode: generateRandomAccessCode(name),
+                    name: name,
+                    project: `Реалізація заходів напряму «${appState.currentProgram}»`,
+                    notes: 'Імпортовано зі списку Excel',
+                    passed: total > 0,
+                    localPct: 20,
+                    planTotal: total,
+                    planSub: subVal,
+                    planLocal: localVal,
+                    allocations: [{ kpkvk, kekv, amount: total }],
+                    received: 0,
+                    spent: 0,
+                    tenders: [],
+                    contracts: []
+                }));
+                addedCount++;
+            });
+
+            if (addedCount > 0) {
+                document.getElementById('bulk-import-textarea').value = '';
+                saveData();
+                renderTable();
+                closeAdminSettingsModal();
+                showToast(`Успішно імпортовано закладів: ${addedCount}`);
+            }
+        }
+
+        function exportAllProgramsCSV() {
+            const headers = [
+                'Субвенція / Програма',
+                'Бюджетний рік',
+                'Заклад освіти',
+                'Статус відбору',
+                'План всього (грн)',
+                'Субвенція (грн)',
+                'Міський бюджет (грн)',
+                'В договорах (грн)',
+                'Надійшло коштів (грн)',
+                'Факт видатків (грн)'
+            ];
+            const rows = [];
+            Object.keys(appState.programs || {}).forEach(progName => {
+                const yearsObj = appState.programs[progName] || {};
+                Object.keys(yearsObj).forEach(yr => {
+                    const list = (yearsObj[yr] || []).map(normalizeInstitution);
+                    list.forEach(i => {
+                        rows.push([
+                            `"${progName.replace(/"/g, '""')}"`,
+                            yr,
+                            `"${i.name.replace(/"/g, '""')}"`,
+                            i.passed ? 'Пройшов' : 'Резерв',
+                            i.planTotal.toFixed(2).replace('.', ','),
+                            i.planSub.toFixed(2).replace('.', ','),
+                            i.planLocal.toFixed(2).replace('.', ','),
+                            getInstitutionContractedTotal(i).toFixed(2).replace('.', ','),
+                            i.received.toFixed(2).replace('.', ','),
+                            i.spent.toFixed(2).replace('.', ',')
+                        ]);
+                    });
+                });
+            });
+
+            const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Зведений_звіт_УСІ_СУБВЕНЦІЇ_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Зведений звіт по ВСІХ субвенціях завантажено!');
         }
 
         function changeBudgetYear(year) {
@@ -3420,13 +3672,32 @@
 
         function deleteInstitution(id) {
             if (!activeSession || activeSession.role !== 'admin') return;
+            const inst = institutions.find(i => i.id === id);
+            if (!inst) return;
+            document.getElementById('delete-inst-id-hidden').value = id;
+            document.getElementById('delete-inst-name-label').textContent = inst.name;
+            document.getElementById('delete-inst-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteInstModal() {
+            document.getElementById('delete-inst-modal').classList.add('hidden');
+        }
+
+        function confirmDeleteInstitution() {
+            if (!activeSession || activeSession.role !== 'admin') return;
+            const id = document.getElementById('delete-inst-id-hidden').value;
             const idx = institutions.findIndex(i => i.id === id);
-            if (idx === -1) return;
-            institutions.splice(idx, 1);
-            selectedForLetterIds.delete(id);
-            saveData();
-            renderTable();
-            showToast('Заклад видалено з реєстру');
+            if (idx !== -1) {
+                const removedName = institutions[idx].name;
+                institutions.splice(idx, 1);
+                selectedForLetterIds.delete(id);
+                recordActivity('Управління освіти', `Видалено заклад «${removedName}» з реєстру`, 'info');
+                saveData();
+                renderTable();
+                closeDossierModal();
+                showToast('Заклад успішно видалено з реєстру');
+            }
+            closeDeleteInstModal();
         }
 
         // ==================== INSTITUTION DOSSIER (RESUME + TENDERS/CONTRACTS) MODAL ====================
@@ -3486,6 +3757,9 @@
             document.getElementById('dossier-btn-edit').onclick = () => {
                 closeDossierModal();
                 openEditModal(inst.id);
+            };
+            document.getElementById('dossier-btn-delete').onclick = () => {
+                deleteInstitution(inst.id);
             };
 
             document.getElementById('dossier-modal').classList.remove('hidden');
@@ -4450,303 +4724,179 @@
         }
 
         function generateLetterPreview() {
+            applyLetterheadToPreview();
             const decreeDate = document.getElementById('letter-decree-date').value.trim() || '02.09.2026';
             const decreeNum = document.getElementById('letter-decree-num').value.trim() || '1299-р';
+            const signerRole = document.getElementById('letter-signer-role').value.trim();
+            const signerName = document.getElementById('letter-signer-name').value.trim();
 
-            document.getElementById('preview-signer-role').textContent = document.getElementById('letter-signer-role').value;
-            document.getElementById('preview-signer-name').textContent = document.getElementById('letter-signer-name').value;
+            document.getElementById('preview-signer-role').textContent = signerRole;
+            document.getElementById('preview-signer-name').textContent = signerName;
 
             const chosen = institutions.filter(i => selectedForLetterIds.has(i.id));
-            const totalSum = chosen.reduce((s, i) => s + Number(i.planTotal), 0);
-            const subSum = chosen.reduce((s, i) => s + Number(i.planSub), 0);
-            const localSum = chosen.reduce((s, i) => s + Number(i.planLocal), 0);
+            const bodyEl = document.getElementById('letter-preview-body');
 
-            // Group allocations by KPKVK -> KEKV -> institutions
-            const kpkvkMap = new Map();
+            if (chosen.length === 0) {
+                bodyEl.innerHTML = `<p class="text-slate-400 italic font-sans text-xs">Оберіть хоча б один заклад освіти у панелі зліва, щоб сформувати текст листа...</p>`;
+                return;
+            }
 
+            const totalAll = chosen.reduce((s, i) => s + i.planTotal, 0);
+            const totalSub = chosen.reduce((s, i) => s + i.planSub, 0);
+            const totalLocal = chosen.reduce((s, i) => s + i.planLocal, 0);
+
+            const kpkvkGroups = new Map();
             chosen.forEach(inst => {
-                const ratioSub = inst.planTotal > 0 ? (inst.planSub / inst.planTotal) : 0.8;
-                const ratioLocal = inst.planTotal > 0 ? (inst.planLocal / inst.planTotal) : 0.2;
-
-                inst.allocations.forEach(alloc => {
-                    const kpkvk = alloc.kpkvk || '0611182';
-                    const kekv = alloc.kekv || '3110';
-                    const amt = Number(alloc.amount) || 0;
-                    const amtSub = Math.round(amt * ratioSub * 100) / 100;
-                    const amtLocal = Math.round((amt - amtSub) * 100) / 100;
-
-                    if (!kpkvkMap.has(kpkvk)) {
-                        kpkvkMap.set(kpkvk, {
-                            kpkvk,
-                            total: 0,
-                            sub: 0,
-                            local: 0,
-                            kekvMap: new Map()
-                        });
+                inst.allocations.forEach(a => {
+                    const code = String(a.kpkvk || '0611181').trim();
+                    if (!kpkvkGroups.has(code)) {
+                        kpkvkGroups.set(code, { code, total: 0, kekvMap: new Map(), instNames: new Set() });
                     }
-                    const progEntry = kpkvkMap.get(kpkvk);
-                    progEntry.total += amt;
-                    progEntry.sub += amtSub;
-                    progEntry.local += amtLocal;
-
-                    if (!progEntry.kekvMap.has(kekv)) {
-                        progEntry.kekvMap.set(kekv, {
-                            kekv,
-                            total: 0,
-                            sub: 0,
-                            local: 0,
-                            items: []
-                        });
-                    }
-                    const kekvEntry = progEntry.kekvMap.get(kekv);
-                    kekvEntry.total += amt;
-                    kekvEntry.sub += amtSub;
-                    kekvEntry.local += amtLocal;
-                    kekvEntry.items.push({
-                        name: inst.name,
-                        project: inst.project,
-                        localPct: inst.localPct,
-                        amt,
-                        amtSub,
-                        amtLocal
-                    });
+                    const grp = kpkvkGroups.get(code);
+                    grp.total += Number(a.amount) || 0;
+                    grp.instNames.add(inst.name);
+                    const kCode = String(a.kekv || '3110').trim();
+                    grp.kekvMap.set(kCode, (grp.kekvMap.get(kCode) || 0) + (Number(a.amount) || 0));
                 });
             });
 
-            let programsHtml = '';
-            let targetTableRowsHtml = '';
+            const instNamesList = chosen.map(i => `«${escapeHtml(i.name)}»`).join(', ');
+            const programLabel = appState.currentProgram === 'НУШ'
+                ? '«Нова українська школа»'
+                : `«${escapeHtml(appState.currentProgram)}»`;
 
-            if (chosen.length === 0) {
-                programsHtml = `<p class="indent-8 text-rose-600 italic">[Оберіть хоча б один заклад у панелі зліва для формування переліку]</p>`;
-                targetTableRowsHtml = `
+            let breakdownHtml = '';
+            kpkvkGroups.forEach((grp) => {
+                const progDesc = KPKVK_NAMES[grp.code] || 'на реалізацію заходів бюджетної програми';
+                const kekvParts = Array.from(grp.kekvMap.entries())
+                    .map(([k, amt]) => `КЕКВ ${escapeHtml(k)} — <b>${formatNumPlain(amt)} грн</b>`)
+                    .join(', ');
+                breakdownHtml += `
+                    <p style="text-indent: 1.25cm;">
+                        – за КПКВК <b>${escapeHtml(grp.code)}</b> ${progDesc} у сумі <b>${formatNumPlain(grp.total)} грн</b> (${kekvParts});
+                    </p>
+                `;
+            });
+
+            const rowsHtml = chosen.map((inst, idx) => {
+                const kpkvkList = inst.allocations.map(a => `${escapeHtml(a.kpkvk)} (КЕКВ ${escapeHtml(a.kekv)}: ${formatNumPlain(a.amount)})`).join('<br>');
+                return `
                     <tr>
-                        <td class="border border-slate-800 py-2.5 px-2 font-bold">—</td>
-                        <td class="border border-slate-800 py-2.5 px-3">«Програма розвитку освіти Чернівецької міської територіальної громади на 2024–2026 роки»</td>
-                        <td class="border border-slate-800 py-2.5 px-3 font-bold">0,00</td>
-                    </tr>`;
-            } else {
-                let idx = 1;
-                kpkvkMap.forEach((prog) => {
-                    const progDesc = KPKVK_NAMES[prog.kpkvk] || '«Співфінансування заходів, що реалізуються за рахунок субвенції з державного бюджету місцевим бюджетам на забезпечення якісної, сучасної та доступної загальної середньої освіти «Нова українська школа»»';
+                        <td style="border:1px solid #000; padding:4px 6px; text-align:center;">${idx + 1}</td>
+                        <td style="border:1px solid #000; padding:4px 6px;">${escapeHtml(inst.name)}</td>
+                        <td style="border:1px solid #000; padding:4px 6px; font-size:12px;">${kpkvkList}</td>
+                        <td style="border:1px solid #000; padding:4px 6px; text-align:right;">${formatNumPlain(inst.planSub)}</td>
+                        <td style="border:1px solid #000; padding:4px 6px; text-align:right;">${formatNumPlain(inst.planLocal)}</td>
+                        <td style="border:1px solid #000; padding:4px 6px; text-align:right; font-weight:bold;">${formatNumPlain(inst.planTotal)}</td>
+                    </tr>
+                `;
+            }).join('');
 
-                    let kekvBlocks = '';
-                    prog.kekvMap.forEach((kEntry) => {
-                        const instLines = kEntry.items.map(it => `
-                            <p class="indent-8">
-                                – <strong>${escapeHtml(it.name)}</strong> — <strong>${formatNumPlain(it.amt)} грн.</strong> «${escapeHtml(it.project)}», (субвенція — ${formatNumPlain(it.amtSub)} грн., місцевий бюджет ${it.localPct}% — ${formatNumPlain(it.amtLocal)} грн.);
-                            </p>
-                        `).join('');
-
-                        kekvBlocks += `
-                            <p class="indent-8 mt-2">
-                                Збільшити асигнування за <strong>КЕКВ ${escapeHtml(kEntry.kekv)}</strong> на реалізацію заходів Нової української школи на загальну суму <strong>${formatNumPlain(kEntry.total)} грн.</strong> (в т.ч. субвенція — ${formatNumPlain(kEntry.sub)} грн., місцевий бюджет — ${formatNumPlain(kEntry.local)} грн.):
-                            </p>
-                            ${instLines}
-                        `;
-                    });
-
-                    programsHtml += `
-                        <div class="mt-3">
-                            <p class="indent-8">
-                                <strong>${idx}.</strong> За бюджетною програмою <strong>${escapeHtml(prog.kpkvk)}</strong> ${progDesc}:
-                            </p>
-                            ${kekvBlocks}
-                        </div>
-                    `;
-
-                    targetTableRowsHtml += `
-                        <tr>
-                            <td class="border border-slate-800 py-2 px-2 font-bold">${escapeHtml(prog.kpkvk)}</td>
-                            <td class="border border-slate-800 py-2 px-3">«Програма розвитку освіти Чернівецької міської територіальної громади на 2024–2026 роки»</td>
-                            <td class="border border-slate-800 py-2 px-3 font-bold">${formatNumPlain(prog.local)}</td>
-                        </tr>
-                    `;
-                    idx++;
-                });
-            }
-
-            const bodyContainer = document.getElementById('letter-preview-body');
-            bodyContainer.innerHTML = `
-                <p class="indent-8">
-                    Управління освіти Чернівецької міської ради просить розглянути питання щодо виділення додаткових коштів для забезпечення реалізації заходів в рамках Нової української школи (НУШ) у закладах освіти відповідно до розпорядження Голови Чернівецької обласної державної (військової) адміністрації від ${escapeHtml(decreeDate)} № ${escapeHtml(decreeNum)} «Про внесення змін до обласного бюджету Чернівецької області на ${escapeHtml(appState.currentYear)} рік».
+            bodyEl.innerHTML = `
+                <p style="text-indent: 1.25cm;">
+                    Управління освіти Чернівецької міської ради відповідно до розпорядження Чернівецької обласної військової адміністрації від ${escapeHtml(decreeDate)} № ${escapeHtml(decreeNum)} просить внести зміни до розпису бюджету Чернівецької міської територіальної громади на ${escapeHtml(appState.currentYear)} рік по напряму ${programLabel} для ${instNamesList} на загальну суму <b>${formatNumPlain(totalAll)} грн</b> (з них за рахунок коштів субвенції — <b>${formatNumPlain(totalSub)} грн</b>, співфінансування з бюджету громади — <b>${formatNumPlain(totalLocal)} грн</b>), а саме:
                 </p>
-                <p class="indent-8">
-                    Загальна сума додаткової потреби становить <strong>${formatNumPlain(totalSum)} грн.</strong>, з яких субвенція з обласного бюджету складає <strong>${formatNumPlain(subSum)} грн.</strong>, та необхідність співфінансування з місцевого бюджету — <strong>${formatNumPlain(localSum)} грн.</strong>
-                </p>
-                <p class="indent-8">
-                    З метою забезпечення реалізації заходів Нової української школи сформовано перелік об’єктів, які потребують виділення субвенції та забезпечення співфінансування з місцевого бюджету:
-                </p>
-                ${programsHtml}
-                <p class="indent-8 mt-3">
-                    У разі виділення додаткових коштів відбудуться зміни по міській цільовій програмі, а саме:
-                </p>
-                <table class="w-full border-collapse border border-slate-800 text-xs my-3 text-center">
+                ${breakdownHtml}
+                <table style="width:100%; border-collapse:collapse; margin-top:12px; margin-bottom:12px; font-size:13px;">
                     <thead>
-                        <tr class="font-bold bg-slate-50">
-                            <th class="border border-slate-800 py-2 px-2 w-24">КПКВК</th>
-                            <th class="border border-slate-800 py-2 px-3">Назва цільової програми</th>
-                            <th class="border border-slate-800 py-2 px-3 w-36">Обсяг видатків (грн)</th>
+                        <tr style="background:#f3f4f6;">
+                            <th style="border:1px solid #000; padding:5px;">№</th>
+                            <th style="border:1px solid #000; padding:5px;">Заклад освіти</th>
+                            <th style="border:1px solid #000; padding:5px;">КПКВК / КЕКВ</th>
+                            <th style="border:1px solid #000; padding:5px;">Субвенція, грн</th>
+                            <th style="border:1px solid #000; padding:5px;">Міськ. бюджет, грн</th>
+                            <th style="border:1px solid #000; padding:5px;">Всього, грн</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${targetTableRowsHtml}
+                        ${rowsHtml}
+                        <tr style="font-weight:bold; background:#f9fafb;">
+                            <td colspan="3" style="border:1px solid #000; padding:5px;">РАЗОМ:</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right;">${formatNumPlain(totalSub)}</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right;">${formatNumPlain(totalLocal)}</td>
+                            <td style="border:1px solid #000; padding:5px; text-align:right;">${formatNumPlain(totalAll)}</td>
+                        </tr>
                     </tbody>
                 </table>
-                <p class="indent-8">
-                    Одночасно зазначаємо, що вищезазначені зміни вплинуть на напрями та результативні показники бюджетної програми і будуть відображені в паспорті вищевказаної бюджетної програми.
-                </p>
-                <p class="indent-8">
-                    Додатки додаються.
+                <p style="text-indent: 1.25cm;">
+                    Додаток: розрахунки та обґрунтування потреби в асигнуваннях.
                 </p>
             `;
         }
 
         function copyLetterText() {
-            const letterEl = document.getElementById('printable-letter-area');
-            const range = document.createRange();
-            range.selectNode(letterEl);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            try {
-                document.execCommand('copy');
-                showToast('Текст листа скопійовано в буфер обміну (можна вставляти у Word)');
-            } catch (err) {
-                showToast('Не вдалося скопіювати текст', 'error');
-            }
-            window.getSelection().removeAllRanges();
+            const el = document.getElementById('printable-letter-area');
+            if (!el) return;
+            copyTextToClipboard(el.innerText, 'Текст листа скопійовано в буфер обміну!');
         }
 
         function downloadLetterWord() {
-            const letterContent = document.getElementById('printable-letter-area').innerHTML;
+            const letterHtml = document.getElementById('printable-letter-area').innerHTML;
             const docHtml = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
                     <meta charset='utf-8'>
                     <title>Лист на Департамент фінансів</title>
                     <style>
-                        body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-height: 1.4; color: #000; }
-                        table { border-collapse: collapse; width: 100%; margin: 12pt 0; font-size: 12pt; }
-                        th, td { border: 1px solid #000; padding: 5pt 8pt; text-align: center; }
-                        p { text-align: justify; text-indent: 28pt; margin: 6pt 0; }
+                        body { font-family: "Times New Roman", Times, serif; font-size: 14pt; line-height: 1.35; color: #000; }
+                        table { border-collapse: collapse; width: 100%; font-size: 12pt; }
+                        th, td { border: 1px solid #000; padding: 4pt 6pt; }
                     </style>
                 </head>
-                <body>${letterContent}</body>
+                <body>${letterHtml}</body>
                 </html>
             `;
             const blob = new Blob(['\ufeff', docHtml], { type: 'application/msword;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Лист_Департамент_фінансів_НУШ_${appState.currentYear}_${new Date().toISOString().slice(0, 10)}.doc`;
+            a.download = `Лист_Департамент_фінансів_${appState.currentProgram}_${new Date().toISOString().slice(0, 10)}.doc`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('Документ Word (.doc) сформовано та завантажено!');
+            showToast('Лист у форматі Word (.doc) завантажено!');
         }
 
-        function exportContractsRegistryCSV() {
-            const headers = [
-                'Заклад освіти',
-                'Статус закладу',
-                'Номер договору',
-                'Дата договору',
-                'Контрагент (Постачальник)',
-                'Предмет договору',
-                'КЕКВ',
-                'Початкова сума (грн)',
-                'Додаткові угоди (+ грн)',
-                'Загальна сума договору (грн)',
-                'Закрито актами (грн)',
-                'Залишок по договору (грн)',
-                'Статус договору',
-                'Перелік актів'
-            ];
-
-            const rows = [];
-            institutions.forEach(inst => {
-                const contracts = inst.contracts || [];
-                if (contracts.length === 0) {
-                    rows.push([
-                        `"${inst.name.replace(/"/g, '""')}"`,
-                        inst.passed ? 'Пройшов' : 'Резерв',
-                        '—', '—', 'Договори відсутні', '—', '—',
-                        '0,00', '0,00', '0,00', '0,00', '0,00', '—', '—'
-                    ]);
-                } else {
-                    contracts.forEach(c => {
-                        const addSum = (c.addendums || []).reduce((s, a) => s + (Number(a.delta) || 0), 0);
-                        const cTotal = getContractTotalAmount(c);
-                        const cActs = getContractActsSum(c);
-                        const cRem = Math.max(0, cTotal - cActs);
-                        const actsDesc = (c.acts || []).map(a => `${a.number} від ${a.date} (${a.amount.toFixed(2)} грн)`).join(' | ');
-
-                        rows.push([
-                            `"${inst.name.replace(/"/g, '""')}"`,
-                            inst.passed ? 'Пройшов' : 'Резерв',
-                            `"${c.number.replace(/"/g, '""')}"`,
-                            c.date || '',
-                            `"${c.vendor.replace(/"/g, '""')}"`,
-                            `"${c.subject.replace(/"/g, '""')}"`,
-                            c.kekv || '',
-                            (Number(c.baseAmount) || 0).toFixed(2).replace('.', ','),
-                            addSum.toFixed(2).replace('.', ','),
-                            cTotal.toFixed(2).replace('.', ','),
-                            cActs.toFixed(2).replace('.', ','),
-                            cRem.toFixed(2).replace('.', ','),
-                            c.closed ? 'Закрито' : 'Активний',
-                            `"${actsDesc.replace(/"/g, '""')}"`
-                        ]);
-                    });
-                }
-            });
-
-            const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Реєстр_договорів_та_актів_НУШ_${appState.currentYear}_${new Date().toISOString().slice(0, 10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            showToast('Зведений реєстр договорів та актів експортовано в CSV');
-        }
-
-        // ==================== EXPORT & RESET ====================
+        // ==================== CSV EXPORTS & RESET ====================
         function exportToCSV() {
             const headers = [
                 'Заклад освіти',
-                'Захід НУШ',
-                'Примітки',
+                'Код входу',
                 'Статус відбору',
-                'Розбивка по КПКВК / КЕКВ',
-                'План всього (грн)',
-                'Субвенція план (грн)',
-                'Міський бюджет план (грн)',
+                'Назва заходу',
+                'Розподіл по КПКВК/КЕКВ',
+                'Загальний план (грн)',
+                'Субвенція (грн)',
+                'Міський бюджет (грн)',
+                'В договорах (грн)',
+                'Вільний кошторис (грн)',
                 'Надійшло коштів (грн)',
-                'Фактично використано (грн)',
-                'Залишок на рахунках (грн)'
+                'Фактичні видатки (грн)',
+                'Залишок на рахунку (грн)',
+                'Примітки'
             ];
 
             const rows = institutions.map(i => {
-                const allocSummary = i.allocations
-                    .map(a => `КПКВК ${a.kpkvk} / КЕКВ ${a.kekv}: ${a.amount.toFixed(2)} грн`)
-                    .join(' | ');
-
+                const allocDesc = i.allocations.map(a => `${a.kpkvk}/КЕКВ ${a.kekv}: ${a.amount.toFixed(2)}`).join(' | ');
+                const contracted = getInstitutionContractedTotal(i);
+                const freeEst = getInstitutionFreeEstimate(i);
+                const balance = Math.max(0, i.received - i.spent);
                 return [
                     `"${i.name.replace(/"/g, '""')}"`,
+                    i.accessCode,
+                    i.passed ? 'Пройшов' : 'Резерв',
                     `"${i.project.replace(/"/g, '""')}"`,
-                    `"${(i.notes || '').replace(/"/g, '""')}"`,
-                    i.passed ? 'Пройшов на субвенцію' : 'Не пройшов / Резерв',
-                    `"${allocSummary}"`,
+                    `"${allocDesc}"`,
                     i.planTotal.toFixed(2).replace('.', ','),
                     i.planSub.toFixed(2).replace('.', ','),
                     i.planLocal.toFixed(2).replace('.', ','),
+                    contracted.toFixed(2).replace('.', ','),
+                    freeEst.toFixed(2).replace('.', ','),
                     i.received.toFixed(2).replace('.', ','),
                     i.spent.toFixed(2).replace('.', ','),
-                    Math.max(0, i.received - i.spent).toFixed(2).replace('.', ',')
+                    balance.toFixed(2).replace('.', ','),
+                    `"${(i.notes || '').replace(/"/g, '""')}"`
                 ];
             });
 
@@ -4755,15 +4905,74 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Моніторинг_НУШ_Чернівці_${new Date().toISOString().slice(0, 10)}.csv`;
+            a.download = `Моніторинг_${appState.currentProgram}_${appState.currentYear}_${new Date().toISOString().slice(0, 10)}.csv`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showToast('Таблицю експортовано у файл CSV (Excel)');
+            showToast('Зведену таблицю Excel (CSV) завантажено');
+        }
+
+        function exportContractsRegistryCSV() {
+            const headers = [
+                'Заклад освіти',
+                'Номер договору',
+                'Дата договору',
+                'Контрагент (Постачальник)',
+                'Предмет договору',
+                'КЕКВ',
+                'Базова сума (грн)',
+                'Додаткові угоди (грн)',
+                'Загальна сума договору (грн)',
+                'Закрито актами (грн)',
+                'Залишок по договору (грн)',
+                'Статус договору'
+            ];
+
+            const rows = [];
+            institutions.forEach(inst => {
+                (inst.contracts || []).forEach(c => {
+                    const addSum = (c.addendums || []).reduce((s, a) => s + (Number(a.delta) || 0), 0);
+                    const totalAmt = getContractTotalAmount(c);
+                    const actsAmt = getContractActsSum(c);
+                    const remAmt = Math.max(0, totalAmt - actsAmt);
+                    rows.push([
+                        `"${inst.name.replace(/"/g, '""')}"`,
+                        `"${c.number.replace(/"/g, '""')}"`,
+                        c.date || '',
+                        `"${c.vendor.replace(/"/g, '""')}"`,
+                        `"${c.subject.replace(/"/g, '""')}"`,
+                        c.kekv || '',
+                        (Number(c.baseAmount) || 0).toFixed(2).replace('.', ','),
+                        addSum.toFixed(2).replace('.', ','),
+                        totalAmt.toFixed(2).replace('.', ','),
+                        actsAmt.toFixed(2).replace('.', ','),
+                        remAmt.toFixed(2).replace('.', ','),
+                        c.closed ? 'Закрито' : 'Активний'
+                    ]);
+                });
+            });
+
+            if (rows.length === 0) {
+                showToast('У реєстрі ще немає жодного договору для експорту', 'error');
+                return;
+            }
+
+            const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Реєстр_договорів_${appState.currentProgram}_${appState.currentYear}_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('Реєстр договорів та актів (CSV) завантажено');
         }
 
         function openResetModal() {
+            if (!activeSession || activeSession.role !== 'admin') return;
             document.getElementById('reset-modal').classList.remove('hidden');
         }
 
@@ -4773,20 +4982,13 @@
 
         function confirmResetData() {
             if (!activeSession || activeSession.role !== 'admin') return;
-            appState = {
-                adminCode: appState.adminCode || 'ADMIN-2026',
-                currentYear: '2026',
-                years: {
-                    '2026': JSON.parse(JSON.stringify(defaultInstitutions)).map(normalizeInstitution)
-                }
-            };
-            institutions = appState.years['2026'];
-            selectedForLetterIds = new Set(['inst-1']);
+            institutions = JSON.parse(JSON.stringify(defaultInstitutions)).map(normalizeInstitution);
+            appState.programs[appState.currentProgram][appState.currentYear] = institutions;
+            selectedForLetterIds = new Set(institutions.length ? [institutions[0].id] : []);
             saveData();
-            renderYearSelector();
             renderTable();
             closeResetModal();
-            showToast('Демонстраційні дані відновлено');
+            showToast('Початкові дані відновлено');
         }
 
         // Expose functions globally for inline HTML handlers
@@ -4795,9 +4997,7 @@
             handleInstitutionLogin,
             handleAdminLogin,
             logoutSession,
-            openAdminSettingsModal,
-            closeAdminSettingsModal,
-            saveAdminCodeSetting,
+            togglePasswordVisibility,
             changeBudgetProgram,
             openAddProgramModal,
             closeAddProgramModal,
@@ -4806,14 +5006,21 @@
             openAddYearModal,
             closeAddYearModal,
             createBudgetYear,
+            openAdminSettingsModal,
+            closeAdminSettingsModal,
+            saveAdminCodeSetting,
+            saveLetterheadSettings,
+            bulkImportInstitutions,
+            exportAllProgramsCSV,
+            exportBackupJSON,
+            importBackupJSON,
+            downloadStandaloneHTML,
             switchTab,
-            renderReportsFolder,
-            exportIndividualInstitutionCSV,
-            downloadIndividualInstitutionWord,
-            downloadGeneralReportWord,
             renderTable,
             togglePassedStatus,
             deleteInstitution,
+            closeDeleteInstModal,
+            confirmDeleteInstitution,
             openDossierModal,
             closeDossierModal,
             openTenderModal,
@@ -4821,6 +5028,7 @@
             saveTenderForm,
             deleteTender,
             openContractModal,
+            updateContractKekvHint,
             closeContractModal,
             saveContractForm,
             toggleContractClosed,
@@ -4832,22 +5040,18 @@
             openAddendumModal,
             closeAddendumModal,
             saveAddendumForm,
-            updateContractKekvHint,
             sendInstitutionMessage,
             openPassportModal,
             closePassportModal,
-            exportBackupJSON,
-            downloadStandaloneHTML,
-            importBackupJSON,
-            addAllocationRow,
-            removeAllocationRow,
-            validateBudgetBreakdown,
-            recalcModalSplit,
-            regenerateModalAccessCode,
             openAddModal,
             openEditModal,
             closeInstitutionModal,
             saveInstitution,
+            regenerateModalAccessCode,
+            addAllocationRow,
+            removeAllocationRow,
+            validateBudgetBreakdown,
+            recalcModalSplit,
             openQuickFinanceModal,
             closeQuickFinanceModal,
             fillFullReceived,
@@ -4859,19 +5063,21 @@
             generateLetterPreview,
             copyLetterText,
             downloadLetterWord,
-            copyInstitutionInvite,
-            exportContractsRegistryCSV,
-            copyTextToClipboard,
+            renderReportsFolder,
+            exportIndividualInstitutionCSV,
+            downloadIndividualInstitutionWord,
+            downloadGeneralReportWord,
             exportToCSV,
+            exportContractsRegistryCSV,
             openResetModal,
             closeResetModal,
-            confirmResetData
+            confirmResetData,
+            copyTextToClipboard,
+            copyInstitutionInvite
         });
 
-        // ==================== INIT ====================
-        window.addEventListener('DOMContentLoaded', () => {
-            initCloudAndData();
-        });
+        // Start application
+        initCloudAndData();
     </script>
 </body>
 </html>
